@@ -1,0 +1,127 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the server."
+            }
+        },
+        "skuName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the sku, typically, tier + family + cores, e.g. B_Gen4_1, GP_Gen5_8."
+            }
+        },
+        "skuTier": {
+            "type": "string",
+            "metadata": {
+                "description": "The tier of the particular SKU, e.g. Basic. - Basic, GeneralPurpose, MemoryOptimized"
+            }
+        },
+        "skuCapacity": {
+            "type": "int",
+            "metadata": {
+                "description": "The scale up/out capacity, representing server's compute units."
+            }
+        },
+        "skuSize": {
+            "type": "int",
+            "metadata": {
+                "description": "The size code, to be interpreted by resource as appropriate."
+            }
+        },
+        "skuFamily": {
+            "type": "string",
+            "metadata": {
+                "description": "The family of hardware."
+            }
+        },
+        "version": {
+            "type": "string",
+            "metadata": {
+                "description": "Server version. - 5.6 or 5.7"
+            }
+        },
+        "sslEnforcement": {
+            "type": "string",
+            "metadata": {
+                "description": "Enable ssl enforcement or not when connect to server. - Enabled or Disabled"
+            }
+        },
+        "administratorLogin": {
+            "type": "string",
+            "metadata": {
+                "description": "Administrator login for the MySQL server"
+            }
+        },
+        "administratorLoginPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Administrator Login Password"
+            }
+        },
+        "backupRetentionDays": {
+            "type": "int",
+            "metadata": {
+                "description": "Backup retention days for the server."
+            }
+        },
+        "geoRedundantBackup": {
+            "type": "string",
+            "metadata": {
+                "description": "Enable Geo-redundant or not for server backup. - Enabled or Disabled"
+            }
+        },
+        "storageMB": {
+            "type": "int",
+            "metadata": {
+                "description": "Max storage allowed for a server."
+            }
+        },
+        "storageAutogrow": {
+            "type": "string",
+            "defaultValue": "Disabled",
+            "metadata": {
+                "description": "Enable Storage Auto Grow. - Enabled or Disabled"
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "The location the resource resides in."
+            }
+        }
+    },
+    "resources": [
+        {
+            "name": "[parameters('serverName')]",
+            "type": "Microsoft.DBforMySQL/servers",
+            "apiVersion": "2017-12-01",
+            "sku": {
+                "name": "[parameters('skuName')]",
+                "tier": "[parameters('skuTier')]",
+                "capacity": "[parameters('skuCapacity')]",
+                "size": "[parameters('skuSize')]",
+                "family": "[parameters('skuFamily')]"
+        },
+            "properties": {
+                "version": "[parameters('version')]",
+                "sslEnforcement": "[parameters('sslEnforcement')]",
+                "administratorLogin": "[parameters('administratorLogin')]",
+                "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+            "storageProfile": {
+                "backupRetentionDays": "[parameters('backupRetentionDays')]",
+                "geoRedundantBackup": "[parameters('geoRedundantBackup')]",
+                "storageMB": "[parameters('storageMB')]",
+                "storageAutogrow": "[parameters('storageAutogrow')]"
+            },
+            "createMode": "Default"
+            },
+            "location": "[parameters('location')]",
+            "tags": {},
+            "resources": []
+            }
+    ]
+  }
