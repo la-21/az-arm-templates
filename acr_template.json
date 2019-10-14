@@ -27,6 +27,9 @@
             }
         }
     },
+    "variables": {
+        "containerRegistryName": "[concat('acr-sea-', uniquestring(resourceGroup().id))]"
+    },
     "resources": [
         {
             "name": "[parameters('acrName')]",
@@ -42,5 +45,11 @@
 
             }
         }
-    ]
+    ],
+    "outputs": {
+        "containerRegistryName": {
+            "type": "string",
+            "value": "[variables('containerRegistryName')]"
+        }
+    }
 } 
