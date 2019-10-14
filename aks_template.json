@@ -1,0 +1,218 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "clusterName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the managed cluster resource."
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Resource location"
+            }
+        },
+        "kubernetesVersion": {
+            "type": "string",
+            "defaultValue": "1.13.11",
+            "allowedValues": [
+                "1.10.12",
+                "1.10.13",
+                "1.11.9",
+                "1.11.10",
+                "1.12.7",
+                "1.12.8",
+                "1.13.10",
+                "1.13.11",
+                "1.14.16",
+                "1.14.17"
+            ],
+            "metadata": {
+                "description": "Version of Kubernetes specified when creating the managed cluster."
+            }
+        },
+        "dnsPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "DNS prefix specified when creating the managed cluster."
+            }
+        },
+        "agentPoolCount": {
+            "type": "int",
+            "defaultValue": "1",
+            "minValue": 1,
+            "maxValue": 50,
+            "metadata": {
+                "description": "Number of agents (VMs) to host docker containers. Allowed values must be in the range of 1 to 100 (inclusive). The default value is 1."
+            }
+        },
+        "agentVmSize": {
+            "type": "string",
+            "metadata": {
+                "description": "Size of agent VMs."
+            }
+        },
+        "agentOsType": {
+            "type": "string",
+            "defaultValue": "Linux",
+            "allowedValues": [
+                "Linux",
+                "Windows"
+            ],
+            "metadata": {
+                "description": "OsType to be used to specify os type. Choose from Linux and Windows. Default to Linux. - Linux or Windows"
+            }
+        },
+        "agentPoolName": {
+            "type": "string",
+            "metadata": {
+                "description": "Unique name of the agent pool profile in the context of the subscription and resource group."
+            }
+        },
+        "linuxAdminUserName": {
+            "type": "string",
+            "metadata": {
+                "description": "The administrator username to use for Linux VMs."
+            }
+        },
+        "linuxSshKeyData": {
+            "type": "securestring",
+            "metadata": {
+                "description": "SSH configuration for Linux-based VMs running on Azure."
+            }
+        },
+        "servicePrincipalClientId": {
+            "type": "string",
+            "metadata": {
+                "description": "The ID for the service principal."
+            }
+        },
+        "servicePrincipalSecret": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The secret password associated with the service principal in plain text."
+            }
+        },
+        "nodeResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the resource group containing agent pool nodes."
+            }
+        },
+        "enableRBAC": {
+            "type": "bool",
+            "metadata": {
+                "description": "Whether to enable Kubernetes Role-Based Access Control."
+            }
+        },
+        "networkPlugin": {
+            "type": "string",
+            "allowedValues": [
+                "kubenet",
+                "azure"
+            ],
+            "metadata": {
+                "description": "Network plugin used for building Kubernetes network. - azure or kubenet"
+            }  
+        },
+        "clusterIdentity": {
+            "type": "string",
+            "metadata": {
+                "description": "The type of identity used for the managed cluster. Type 'SystemAssigned' will use an implicitly created identity in master components and an auto-created user assigned identity in MC_ resource group in agent nodes. Type 'None' will not use MSI for the managed cluster, service principal will be used instead. - SystemAssigned or None"
+            }
+        }
+    },
+    "variables": {
+        "clusterName": "[concat('aks-', uniqueString(resourceGroup().id))]"
+    },
+    "resources": [
+    {
+        "name": "[parameters('clusterName')]",
+        "type": "Microsoft.ContainerService/managedClusters",
+        "apiVersion": "2019-06-01",
+        "location": "[parameters('location')]",
+        "tags": {},
+        "properties": {
+        "kubernetesVersion": "[parameters('kubernetesVersion')]",
+        "dnsPrefix": "[parameters('dnsPrefix')]",
+        "agentPoolProfiles": [
+          { 
+            "count": "[parameters('agentPoolCount')]",
+            "vmSize": "[parameters('agentVmSize')]",
+            /*"osDiskSizeGB": "[parameters('agentOSsDiskSizeGb')]",
+            "vnetSubnetID": "[parameters('agentVnetSubnetId')]",
+            "maxPods": "[parameters('agentMaxPods')]",*/
+            "osType": "[parameters('agentOsType')]",
+            /*"maxCount": "[parameters('agentMaxCount')]",
+            "minCount": "[parameters('agentMinCount')]",
+            "enableAutoScaling": "[parameters('enableAutoScaling')]",
+            "type": "[parameters('agentPoolType')]",
+            "orchestratorVersion": "[parameters('orchestratorVersion')]",
+            "availabilityZones": [
+                "[parameters('availabilityZones')]"
+            ],
+            "enableNodePublicIP": "[parameters('enableNodePublicIp')]",
+            "scaleSetPriority": "[parameters('scaleSetPriority')]",
+            "scaleSetEvictionPolicy": "[parameters('scaleSetEvictionPolicy')]",
+            "nodeTaints": [
+              "[parameters('nodeTaints')]"
+            ],*/
+            "name": "[parameters('agentPoolName')]"
+          }
+        ],
+        "linuxProfile": {
+            "adminUsername": "[parameters('linuxAdminUserName')]",
+            "ssh": {
+                "publicKeys": [
+                {
+                  "keyData": "[parameters('linuxSshKeyData')]"
+                }
+                ]   
+            } 
+        },
+        /*"windowsProfile": {
+            "adminUsername": "[parameters('windowsAdminUserName')]",
+            "adminPassword": "[parameters('windowsAdminPassword')]"
+        },*/
+        "servicePrincipalProfile": {
+            "clientId": "[parameters('servicePrincipalClientId')]",
+            "secret": "[parameters('servicePrincipalSecret')]"
+        },
+        "addonProfiles": {},
+        "nodeResourceGroup": "[parameters('nodeResourceGroup')]",
+        "enableRBAC": "[parameters('enableRBAC')]",
+        //"enablePodSecurityPolicy": "[parameters('enablePodSecurityPolicy')]",
+        "networkProfile": {
+            "networkPlugin": "[parameters('networkPlugin')]"
+            /*"networkPolicy": "[parameters('networkPolicy')]"
+            "podCidr": "[parameters('podCidr')]",
+            "serviceCidr": "[parameters('serviceCidr')]",
+            "dnsServiceIP": "[parameters('dnsServiceIP')]",
+            "dockerBridgeCidr": "[parameters('dockerBridgeCidr')]",
+            "loadBalancerSku": "[parameters('loadBalancerSku')]"*/
+        }
+        /*"aadProfile": {
+            "clientAppID": "[parameters('aadClientAppId')]",
+            "serverAppID": "[parameters('aadServerAppId')]",
+            "serverAppSecret": "[parameters('serverAppSecret')]",
+            "tenantID": "[parameters('tenantId')]"
+        },*/
+        /*"apiServerAuthorizedIPRanges": [
+            "[parameters('apiServerAuthorizedIPRanges')]"
+        ]*/
+        },
+        "identity": {
+            "type": "[parameters('clusterIdentity')]"
+        },
+        "resources": []
+        }
+    ],
+    "outputs": {
+        "clusterName": {
+            "type": "string",
+            "value": "[variables('clusterName')]"
+        }
+    }
+}
