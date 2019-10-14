@@ -94,6 +94,9 @@
             }
         }
     },
+    "variables": {
+        "mysqlServerName": "[concat('mysql-sea-', uniquestring(resourceGroup().id))]"
+    },
     "resources": [
         {
             "name": "[parameters('serverName')]",
@@ -123,5 +126,10 @@
             "tags": {},
             "resources": []
             }
-    ]
-  }
+    ],    "outputs": {
+        "mysqlServerName": {
+            "type": "string",
+            "value": "[variables('mysqlServerName')]"
+        }
+    }
+}
