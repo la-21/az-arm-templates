@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverName": {
+            "value": "mysql-la-sea-001"
+        },
+        "skuName": {
+            "value": "B_Gen5_2"
+        },
+        "skuTier": {
+            "value": "Basic"
+        },
+        "skuCapacity": {
+            "value": 2 
+        },
+        "skuSize": {
+            "value": 20480
+        },
+        "skuFamily": {
+            "value": "Gen5"
+        },
+        "version": {
+            "value": "5.7"
+        },
+        "sslEnforcement": {
+            "value": "Enabled"
+        },
+        "administratorLogin": {
+            "value": "mysqldbadmin"
+        },
+        "administratorLoginPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/34379e17-712e-48f8-9680-8b790bb8ec60/resourceGroups/latest_rg/providers/Microsoft.KeyVault/vaults/latestkeyvault"
+                }, 
+                "secretName": "mysqldbadmin"
+            }
+        },
+        "backupRetentionDays": {
+            "value": 7
+        },
+        "geoRedundantBackup": {
+            "value": "Disabled"
+        },
+        "storageMB": {
+            "value": 20480
+        },
+        "storageAutoGrow": {
+            "value": "Enabled"
+        },
+        "location": {
+            "value": "southeastasia"
+        }
+    }
+}

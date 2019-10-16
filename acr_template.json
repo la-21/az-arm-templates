@@ -1,0 +1,55 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "acrName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the container registry."
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "The location of the resource. This cannot be changed after the resource is created."
+            }
+        },
+        "skuName": {
+            "type": "string",
+            "metadata": {
+                "description": "The SKU of the container registry."
+            }
+        },
+        "adminUserEnabled": {
+            "type": "bool",
+            "metadata": {
+                "description": "The value that indicates whether the admin user is enabled."
+            }
+        }
+    },
+    "variables": {
+        "containerRegistryName": "[concat('acr-sea-', uniquestring(resourceGroup().id))]"
+    },
+    "resources": [
+        {
+            "name": "[parameters('acrName')]",
+            "type": "Microsoft.ContainerRegistry/registries",
+            "apiVersion": "2019-05-01",
+            "location": "[parameters('location')]",
+            "tags": {},
+            "sku": {
+                "name": "[parameters('skuName')]"
+            },
+            "properties": {
+                "adminUserEnabled": "[parameters('adminUserEnabled')]"
+
+            }
+        }
+    ],
+    "outputs": {
+        "containerRegistryName": {
+            "type": "string",
+            "value": "[variables('containerRegistryName')]"
+        }
+    }
+} 
